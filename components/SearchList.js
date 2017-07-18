@@ -10,12 +10,6 @@ import {
 
 class SearchList extends Component {
   componentWillMount() {
-    console.log(this.props.libraries);
-    const ds = new ListView.DataSource({
-      rowHasChanged: (r1,r2) => r1 !== r2
-    });
-
-    this.dataSource = ds.cloneWithRows(this.props.libraries);
   }
 
   renderRow(rowData,sectionId) {
@@ -38,12 +32,14 @@ class SearchList extends Component {
         <SearchBar
           placeholder='Buscar significado...'
           lightTheme
+          clearIcon={{name: 'clear'}}
+          textInputRef='searchText'
           onChangeText={text => this.props.fetchResults(text)}
         />
         <List>
           <ListView
             renderRow={this.renderRow}
-            dataSource={this.dataSource}
+            dataSource={this.props.dataSource}
           />
         </List>
       </View>
@@ -52,8 +48,14 @@ class SearchList extends Component {
 
 }
 
+const dataSource = new ListView.DataSource({
+  rowHasChanged: (r1,r2) => r1 !== r2
+});
+
 function mapStateToProps({libraries}) {
-  return { libraries: libraries.results };
+  return {
+    dataSource: dataSource.cloneWithRows(libraries)
+  };
 }
 
 export default connect(mapStateToProps, actions)(SearchList);
